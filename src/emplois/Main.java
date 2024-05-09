@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package emplois;
 
 import java.awt.CardLayout;
@@ -14,16 +10,16 @@ public class Main extends javax.swing.JFrame {
     // crucial elements
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private Accueil homePanel;
-    private Seances settingsPanel;
+    private Accueil accueilPanel;
+    private Seances seancesPanel;
   
     static Connection con = null; 
-    public static Connection getConnection(String port,String user, String pwd)
+    public static Connection getConnection()
     {
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver"); //Driver class
-            String url = "jdbc:mysql://localhost:3306/"; //jdbc: API, mysql is the database, localhost: server, 3306 port
+            String url = "jdbc:mysql://localhost:3306/edt"; //jdbc: API, mysql is the database, localhost: server, 3306 port
             con = DriverManager.getConnection(url,"root","system");
             System.out.println("Connexion réussie");
         }catch(ClassNotFoundException | SQLException e)
@@ -34,28 +30,29 @@ public class Main extends javax.swing.JFrame {
     }
     public Main() {
         initComponents();
+        con=getConnection();
         setTitle("Gestion des emplois du temps");
-        this.setSize(700,450);
+        this.setSize(835,604);
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         getContentPane().add(mainPanel);
-        homePanel = new Accueil(this); 
-        settingsPanel = new Seances(this); 
+        accueilPanel = new Accueil(this); 
+        seancesPanel = new Seances(this); 
 
         // Add home and settings panels to the main panel
-        mainPanel.add(homePanel, "homePanel");
-        mainPanel.add(settingsPanel, "settingsPanel");
+        mainPanel.add(accueilPanel, "accueilPanel");
+        mainPanel.add(seancesPanel, "seancesPanel");
 
         // Show the home panel by default
         cardLayout.show(mainPanel, "homePanel");
     }
-    public void showSettingsPanel() {
-        cardLayout.show(mainPanel, "settingsPanel");
+    public void afficherSeances() {
+        cardLayout.show(mainPanel, "seancesPanel");
     }
 
     // Method to switch to the home panel
-    public void showHomePanel() {
-        cardLayout.show(mainPanel, "homePanel");
+    public void afficherAccueil() {
+        cardLayout.show(mainPanel, "accueilPanel");
     }
 
     @SuppressWarnings("unchecked")
