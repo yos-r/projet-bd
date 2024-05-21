@@ -51,7 +51,7 @@ public class Accueil extends javax.swing.JPanel {
     public static List<String> getClasses(){
         List<String> list = new ArrayList<String>(); 
         try{
-            String req = "SELECT DISTINCT(classe) FROM tb_cours;";
+            String req = "SELECT DISTINCT(classe) FROM cours;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -67,7 +67,7 @@ public class Accueil extends javax.swing.JPanel {
      public static List<String> getHeure(){
         List<String> list = new ArrayList<String>(); 
         try{
-            String req = "SELECT DISTINCT(heure) FROM tb_cours;";
+            String req = "SELECT DISTINCT(heure) FROM cours;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -83,7 +83,7 @@ public class Accueil extends javax.swing.JPanel {
       public static List<String> getJour(){
         List<String> list = new ArrayList<String>(); 
         try{
-            String req = "SELECT DISTINCT(Jour) FROM tb_cours;";
+            String req = "SELECT DISTINCT(Jour) FROM cours;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -102,7 +102,7 @@ public class Accueil extends javax.swing.JPanel {
     {
         List<Enseignant> list = new ArrayList<Enseignant>(); 
         try {
-            String req = "select * from tb_enseignant;";
+            String req = "select * from enseignant;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -120,7 +120,7 @@ public class Accueil extends javax.swing.JPanel {
     {
         List<Cours> list = new ArrayList<Cours>(); 
         try {
-            String req = "select * from tb_cours;";
+            String req = "select * from cours;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -140,7 +140,7 @@ public class Accueil extends javax.swing.JPanel {
         List<Enseignant> liste = new ArrayList<Enseignant>();
         try
         {
-            String req = "SELECT * FROM tb_enseignant where matricule = ?;";
+            String req = "SELECT * FROM enseignant where matricule = ?;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
             preparedStatement.setString(1, matricule);
@@ -161,7 +161,7 @@ public class Accueil extends javax.swing.JPanel {
         int st=0;
         try
         {
-            String req = "INSERT INTO tb_enseignant VALUES (?,?,?);";
+            String req = "INSERT INTO enseignant VALUES (?,?,?);";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
             preparedStatement.setString(1, matricule);
@@ -185,7 +185,7 @@ public class Accueil extends javax.swing.JPanel {
         
         try
         {
-            String req = "INSERT INTO tb_cours(classe,matiere,num_jour,jour,heure,matricule_ens) VALUES (?,?,?,?,?,?);";
+            String req = "INSERT INTO cours(classe,matiere,num_jour,jour,heure,matricule_ens) VALUES (?,?,?,?,?,?);";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
             preparedStatement.setString(1, classe);
@@ -209,7 +209,7 @@ public class Accueil extends javax.swing.JPanel {
         int st=0;
         try
         {
-            String req = "UPDATE tb_enseignant SET nom = ? , contact =?  WHERE matricule=?;";
+            String req = "UPDATE enseignant SET nom = ? , contact =?  WHERE matricule=?;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
             preparedStatement.setString(1, nom);
@@ -229,7 +229,7 @@ public class Accueil extends javax.swing.JPanel {
         int st=0;
         try
         {
-            String req = "DELETE FROM tb_enseignant where matricule = ?;";
+            String req = "DELETE FROM enseignant where matricule = ?;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
             preparedStatement.setString(1, matricule);
