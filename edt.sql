@@ -30,36 +30,22 @@ CREATE TABLE IF NOT EXISTS `cours` (
   `matricule_ens` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk` (`matricule_ens`),
-  CONSTRAINT `fk` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant` (`matricule`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb3;
+  CONSTRAINT `fk` FOREIGN KEY (`matricule_ens`) REFERENCES `enseignant` (`matricule`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table edt.cours: ~24 rows (approximately)
+-- Dumping data for table edt.cours: ~13 rows (approximately)
 INSERT INTO `cours` (`id`, `classe`, `matiere`, `num_jour`, `Jour`, `heure`, `matricule_ens`) VALUES
-	(8, '6eme', 'FRAN', 1, 'LUNDI', '3eme  et 4eme H', 'ens1'),
-	(9, '6eme', 'SVT', 1, 'LUNDI', '5eme et 6eme H', 'ens5'),
-	(10, '1ING', 'PC', 2, 'MARDI', '1ere et 2eme H', 'ens7'),
-	(11, '6eme', 'MATH', 2, 'MARDI', '3eme  et 4eme H', 'ens2'),
-	(12, '6eme', 'IC', 2, 'MARDI', '5eme H', 'ens8'),
-	(13, '6eme', 'MATH', 3, 'MERCREDI', '1ere H', 'ens2'),
-	(14, '6eme', 'SVT', 3, 'MERCREDI', '2eme H', 'ens5'),
-	(15, '6eme', 'FRAN', 3, 'MERCREDI', '3eme  et 4eme H', 'ens1'),
-	(16, '6eme', 'FRAN', 4, 'JEUDI', '1ere et 2eme H', 'ens1'),
-	(17, '6eme', 'PC', 4, 'JEUDI', '3eme  et 4eme H', 'ens7'),
-	(18, '6eme', 'ANG', 3, 'MERCREDI', '5eme et 6eme H', 'ens6'),
-	(19, '6eme', 'ANG', 5, 'VENDREDI', '1ere H', 'ens6'),
-	(20, '5eme', 'FRAN', 1, 'LUNDI', '1ere et 2eme H', 'ens1'),
-	(21, '5eme', 'MATH', 1, 'LUNDI', '3eme  et 4eme H', 'ens2'),
-	(22, '5eme', 'IC', 1, 'LUNDI', '5eme H', 'ens8'),
-	(23, '5eme', 'MATH', 2, 'MARDI', '1ere et 2eme H', 'ens2'),
-	(25, '5eme', 'FRAN', 2, 'MARDI', '5eme et 6eme H', 'ens1'),
-	(26, '5eme', 'ANG', 3, 'MERCREDI', '1ere et 2eme H', 'ens6'),
-	(27, '5eme', 'MATH', 3, 'MERCREDI', '3eme H', 'ens2'),
-	(28, '5eme', 'IC', 3, 'MERCREDI', '4eme H', 'ens8'),
-	(29, '5eme', 'SVT', 4, 'JEUDI', '1ere et 2eme H', 'ens5'),
-	(30, '5eme', 'FRAN', 4, 'JEUDI', '3eme  et 4eme H', 'ens1'),
-	(31, '5eme', 'SVT', 2, 'MARDI', '3eme H', 'ens5'),
-	(37, '6eme', 'Ondes', 1, 'LUNDI', '3eme  et 4eme H', '333'),
-	(38, '6eme', 'Réseaux', 5, 'VENDREDI', '2eme H', '333');
+	(10, '1ING', 'Analyse', 1, 'Lundi', '8H', 'MA0001'),
+	(12, '1ING', 'Electronique', 1, 'Lundi', '9H30Mn', 'MA0001'),
+	(17, '2ING', 'Optimisation', 2, 'Mardi', '13H', 'MA0002'),
+	(18, '2ING', 'IA syst experts', 1, 'Lundi', '13H', 'GL0002'),
+	(19, '1ING', 'Compilation', 3, 'Mercredi', '14H30Mn', 'GL0002'),
+	(22, '2ING', 'Arch. Microp.', 3, 'Mercredi', '16H', 'GE0001'),
+	(26, '2ING', 'Unix', 4, 'Jeudi', '8H', 'GL0002'),
+	(28, '1ING', 'Tr. Signal', 5, 'Vendredi', '8H', 'GE0001'),
+	(39, '1ING', 'Syst. Exp.', 0, 'Lundi', '16H', 'GE0001'),
+	(40, '2ING', 'Ondes', 1, 'Lundi', '9H30Mn', 'GE0001'),
+	(49, '1ING', 'Compilation', 0, 'Lundi', '17H30Mn', 'GE0001');
 
 -- Dumping structure for table edt.enseignant
 CREATE TABLE IF NOT EXISTS `enseignant` (
@@ -69,17 +55,13 @@ CREATE TABLE IF NOT EXISTS `enseignant` (
   PRIMARY KEY (`matricule`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table edt.enseignant: ~9 rows (approximately)
+-- Dumping data for table edt.enseignant: ~6 rows (approximately)
 INSERT INTO `enseignant` (`matricule`, `nom`, `contact`) VALUES
-	('333', 'P L', '12345678'),
-	('ens1', 'R S', '123456'),
-	('ens2', 'N V', '123456'),
-	('ens3', 'J L', '12345678'),
-	('ens4', 'C D', '1234567'),
-	('ens5', 'M N', '123456'),
-	('ens6', 'A B', '1234567'),
-	('ens7', 'T U', '12345678'),
-	('ens8', 'E F', '456789');
+	('GE0001', 'E F', '12345678'),
+	('GL0001', 'J L', '12345678'),
+	('GL0002', 'A B', '12345678'),
+	('MA0001', 'C D', '12345678'),
+	('MA0002', 'T U', '12345678');
 
 -- Dumping structure for view edt.enseignant_cours
 -- Creating temporary table to overcome VIEW dependency errors
