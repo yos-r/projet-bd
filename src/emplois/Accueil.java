@@ -275,40 +275,7 @@ public class Accueil extends javax.swing.JPanel {
         }
         return res;
     }
-    public static int majEnseignant(String enseignant, String matiere,String classe){
-        int res=0;
-        try
-        {
-            String req = "SELECT * from cours WHERE classe=? and matiere=?";
-            Connection con=Main.con;
-            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
-            
-            preparedStatement.setString(1, classe);
-            preparedStatement.setString(2, matiere);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next() ){
-                String req2 = "UPDATE cours SET matricule_ens=? where classe=? and matiere=?";
-                PreparedStatement preparedStatement2 = (PreparedStatement)con.prepareCall(req2);
-                preparedStatement2.setString(1, enseignant);
-                preparedStatement2.setString(2, classe);
-                preparedStatement2.setString(3, matiere);
-                int st = preparedStatement2.executeUpdate();
-                JOptionPane.showMessageDialog(null, 
-                                          "La seance de "+matiere+" pour la classe  "+classe+" est prise en charge par  "+enseignant, 
-                                          "Mise a jour de l'enseignant", 
-                                          JOptionPane.INFORMATION_MESSAGE);
-                return 1;
-            }
-            else{
-                return 0;
-            }
-        }
-        catch(SQLException e)
-        {
-            e.printStackTrace();
-        }
-        return res;
-    }
+    
     public static int addCours(String classe,String matiere, String jour, String heure, String matricule)
     {
         int st=0;
@@ -323,8 +290,7 @@ public class Accueil extends javax.swing.JPanel {
                                           "Erreur ajout de cours", 
                                           JOptionPane.ERROR_MESSAGE);
         }
-        else if (majEnseignant(matricule,matiere,classe)==1){
-        }
+        
         else if (verifCreneauClasse(classe, heure, jour)==1){
             
         }
