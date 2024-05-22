@@ -227,6 +227,88 @@ public class Accueil extends javax.swing.JPanel {
         }
         return res;
     }
+   
+    public static int majCreneau(String enseignant, String heure,String jour,String matiere,String classe){
+        int res=0;
+        try
+        {
+            String req = "SELECT * from cours WHERE matricule_ens=? and classe=? and matiere=?";
+            Connection con=Main.con;
+            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+            preparedStatement.setString(1, enseignant);
+            
+            preparedStatement.setString(2, classe);
+            preparedStatement.setString(3, matiere);
+            System.out.println("La requete est: "+preparedStatement);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next() ){
+                String req2 = "UPDATE cours SET jour=? where matricule_ens=? and classe=? and matiere=?";
+                PreparedStatement preparedStatement2 = (PreparedStatement)con.prepareCall(req2);
+                preparedStatement2.setString(1, jour);
+                preparedStatement2.setString(2, enseignant);
+                preparedStatement2.setString(3, classe);
+                preparedStatement2.setString(4, matiere);
+                String req3 = "UPDATE cours SET heure=? where matricule_ens=? and classe=? and matiere=?";
+                PreparedStatement preparedStatement3 = (PreparedStatement)con.prepareCall(req3);
+                preparedStatement3.setString(1, heure);
+                preparedStatement3.setString(2, enseignant);
+                preparedStatement3.setString(3, classe);
+                preparedStatement3.setString(4, matiere);
+//                            System.out.println("La requete  de maj est: "+preparedStatement2);
+
+                int st = preparedStatement2.executeUpdate();
+                int st2=preparedStatement3.executeUpdate();
+                JOptionPane.showMessageDialog(null, 
+                                          "La seance de "+matiere+" par  "+enseignant+" pour la classe prend place  "+jour+" a "+heure, 
+                                          "Mise a jour creneau horaire", 
+                                          JOptionPane.INFORMATION_MESSAGE);
+                return 1;
+            }
+            else{
+                System.out.println("creneau non modifie");
+                return 0;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return res;
+    }
+    public static int majEnseignant(String enseignant, String matiere,String classe){
+        int res=0;
+        try
+        {
+            String req = "SELECT * from cours WHERE classe=? and matiere=?";
+            Connection con=Main.con;
+            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+            
+            preparedStatement.setString(1, classe);
+            preparedStatement.setString(2, matiere);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next() ){
+                String req2 = "UPDATE cours SET matricule_ens=? where classe=? and matiere=?";
+                PreparedStatement preparedStatement2 = (PreparedStatement)con.prepareCall(req2);
+                preparedStatement2.setString(1, enseignant);
+                preparedStatement2.setString(2, classe);
+                preparedStatement2.setString(3, matiere);
+                int st = preparedStatement2.executeUpdate();
+                JOptionPane.showMessageDialog(null, 
+                                          "La seance de "+matiere+" pour la classe  "+classe+" est prise en charge par  "+enseignant, 
+                                          "Mise a jour de l'enseignant", 
+                                          JOptionPane.INFORMATION_MESSAGE);
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return res;
+    }
     public static int addCours(String classe,String matiere, String jour, String heure, String matricule)
     {
         int st=0;
@@ -241,11 +323,17 @@ public class Accueil extends javax.swing.JPanel {
                                           "Erreur ajout de cours", 
                                           JOptionPane.ERROR_MESSAGE);
         }
+        else if (majEnseignant(matricule,matiere,classe)==1){
+        }
         else if (verifCreneauClasse(classe, heure, jour)==1){
             
         }
         else if(verifCreneauEnseignant(matricule,heure,jour)==1){
         }
+        else if(majCreneau(matricule, heure,jour,matiere,classe)==1){
+            //String enseignant, String heure,String jour,String matiere,String classe
+        }
+        
         else{
         try
         {
@@ -343,6 +431,7 @@ public class Accueil extends javax.swing.JPanel {
         enregistrercours = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        Rafraichir = new javax.swing.JButton();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -397,7 +486,7 @@ public class Accueil extends javax.swing.JPanel {
                 requetesActionPerformed(evt);
             }
         });
-        add(requetes, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 590, -1, -1));
+        add(requetes, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 590, -1, -1));
 
         tablecours.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -497,19 +586,19 @@ public class Accueil extends javax.swing.JPanel {
 
         jLabel6.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel6.setText("Classe");
-        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, -1));
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, 20));
 
         jLabel7.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel7.setText("Matière");
-        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 390, -1, -1));
+        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 390, -1, 20));
 
         jLabel8.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel8.setText("Jour");
-        add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 430, -1, -1));
+        add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 430, -1, 20));
 
         jLabel9.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel9.setText("Heure");
-        add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, -1, -1));
+        add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, -1, 20));
 
         matiere.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -527,7 +616,7 @@ public class Accueil extends javax.swing.JPanel {
 
         jLabel10.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel10.setText("Matricule Ens.");
-        add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 510, -1, -1));
+        add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 510, -1, 20));
 
         choixClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         choixClasse.addActionListener(new java.awt.event.ActionListener() {
@@ -561,7 +650,7 @@ public class Accueil extends javax.swing.JPanel {
                 enregistrercoursActionPerformed(evt);
             }
         });
-        add(enregistrercours, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 550, -1, -1));
+        add(enregistrercours, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 550, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel1.setText("Formulaire d'enregistrement des enseignants");
@@ -583,6 +672,14 @@ public class Accueil extends javax.swing.JPanel {
         );
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 33, -1, -1));
+
+        Rafraichir.setText("Rafraichir");
+        Rafraichir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RafraichirActionPerformed(evt);
+            }
+        });
+        add(Rafraichir, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 550, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void matriculeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matriculeActionPerformed
@@ -697,7 +794,7 @@ public class Accueil extends javax.swing.JPanel {
         String choixjour=this.choixJour.getSelectedItem().toString();
         String choixens=this.matricule2.getText();
         System.out.println("Classe: "+choixclasse+" heure "+choixheure + " jour "+choixjour);
-        
+
         addCours(choixclasse, choixmatiere, choixjour, choixheure, choixens);
         model.setRowCount(0);
         for(Cours cours:this.getCours()){
@@ -708,7 +805,18 @@ public class Accueil extends javax.swing.JPanel {
         matricule2.setText("");
     }//GEN-LAST:event_enregistrercoursActionPerformed
 
+    private void RafraichirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RafraichirActionPerformed
+        DefaultTableModel modelcours = (DefaultTableModel) tablecours.getModel();
+        modelcours.setRowCount(0);
+        for(Cours cours:this.getCours()){
+            Object[] row= {cours.getClasse(),cours.getMatiere(),cours.getJour(),cours.getHeure(),cours.getEnseignant()};
+            modelcours.addRow(row);
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RafraichirActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Rafraichir;
     private javax.swing.JButton chercher;
     private javax.swing.JComboBox<String> choixClasse;
     private javax.swing.JComboBox<String> choixHeure;
