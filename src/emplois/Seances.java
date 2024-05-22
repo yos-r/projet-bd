@@ -56,11 +56,11 @@ public class Seances extends javax.swing.JPanel {
        public static List<EnseignantCours> getEnseignantsCoursByClasseAndMatiere(String classe,String matiere){
             List<EnseignantCours> list = new ArrayList<EnseignantCours>(); 
 try {
-            String req = "select * from enseignant_cours where classe=? and matiere=?;";
+            String req = "select * from enseignant_cours where classe=? and matiere LIKE ?;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             preparedStatement.setString(1,classe);
-            preparedStatement.setString(2, matiere);
+            preparedStatement.setString(2, "%"+matiere+"%");
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -76,7 +76,7 @@ try {
        public static List<EnseignantCours> getEnseignantsCoursByClasse(String classe){
                    List<EnseignantCours> list = new ArrayList<EnseignantCours>(); 
 try {
-            String req = "select * from enseignant_cours where classe=? ";
+            String req = "select * from enseignant_cours where classe=? ORDER BY num_jour";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
             preparedStatement.setString(1,classe);
@@ -143,7 +143,7 @@ try {
         retour = new javax.swing.JButton();
         idcours = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        chercher1 = new javax.swing.JButton();
+        supprimer = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         chercher2 = new javax.swing.JButton();
         choixClasse1 = new javax.swing.JComboBox<>();
@@ -173,17 +173,22 @@ try {
             .addGap(0, 300, Short.MAX_VALUE)
         );
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Les séances de cours dans la semaine d'une matière dans une classe");
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel2.setText("Matière");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 110, -1, 20));
 
         matricule.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 matriculeActionPerformed(evt);
             }
         });
+        add(matricule, new org.netbeans.lib.awtextra.AbsoluteConstraints(698, 106, 80, 0));
 
         chercher.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         chercher.setText("Chercher");
@@ -193,9 +198,11 @@ try {
                 chercherActionPerformed(evt);
             }
         });
+        add(chercher, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 110, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel3.setText("Classe");
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, 20));
 
         tablecours.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -207,18 +214,22 @@ try {
         ));
         jScrollPane1.setViewportView(tablecours);
 
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, 699, 245));
+
         choixClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         choixClasse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 choixClasseActionPerformed(evt);
             }
         });
+        add(choixClasse, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 110, -1, -1));
 
         matiere.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 matiereActionPerformed(evt);
             }
         });
+        add(matiere, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 110, 93, -1));
 
         retour.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         retour.setText("Retour");
@@ -228,21 +239,26 @@ try {
                 retourActionPerformed(evt);
             }
         });
+        add(retour, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 110, -1, -1));
+        add(idcours, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 430, 93, -1));
 
         jLabel4.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel4.setText("ID");
+        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 430, -1, 20));
 
-        chercher1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        chercher1.setText("Supprimer");
-        chercher1.setName(""); // NOI18N
-        chercher1.addActionListener(new java.awt.event.ActionListener() {
+        supprimer.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        supprimer.setText("Supprimer");
+        supprimer.setName(""); // NOI18N
+        supprimer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chercher1ActionPerformed(evt);
+                supprimerActionPerformed(evt);
             }
         });
+        add(supprimer, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 430, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel5.setText("Classe");
+        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 500, -1, -1));
 
         chercher2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         chercher2.setText("Chercher");
@@ -252,6 +268,7 @@ try {
                 chercher2ActionPerformed(evt);
             }
         });
+        add(chercher2, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 490, 80, -1));
 
         choixClasse1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         choixClasse1.addActionListener(new java.awt.event.ActionListener() {
@@ -259,9 +276,11 @@ try {
                 choixClasse1ActionPerformed(evt);
             }
         });
+        add(choixClasse1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 490, 87, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setText("Emploi du temps de la semaine dans une classe");
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 460, 515, -1));
 
         chercher3.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         chercher3.setText("Afficher tous les cours");
@@ -271,96 +290,8 @@ try {
                 chercher3ActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(10, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(688, 688, 688)
-                                .addComponent(matricule, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(14, 14, 14)
-                                        .addComponent(jLabel4)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(idcours, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(chercher1)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(suppAlerte, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(choixClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel2)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(matiere, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(chercher)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(chercher3))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(33, 33, 33))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(retour)
-                        .addGap(43, 43, 43))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(12, 12, 12)
-                        .addComponent(choixClasse1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(chercher2))
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 699, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jLabel1)
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(chercher)
-                    .addComponent(choixClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(matiere, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chercher3))
-                .addGap(18, 18, 18)
-                .addComponent(matricule, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(chercher1)
-                    .addComponent(idcours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(suppAlerte, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(retour)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(chercher2)
-                    .addComponent(choixClasse1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(95, 95, 95))
-        );
+        add(chercher3, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, -1, -1));
+        add(suppAlerte, new org.netbeans.lib.awtextra.AbsoluteConstraints(288, 398, 167, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void matriculeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matriculeActionPerformed
@@ -387,7 +318,7 @@ try {
 // TODO add your handling code here:
     }//GEN-LAST:event_retourActionPerformed
 
-    private void chercher1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chercher1ActionPerformed
+    private void supprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerActionPerformed
         String id=idcours.getText();        // TODO add your handling code here:
         int st=deleteEnseignantCoursById(id);
         if (st==0){
@@ -401,7 +332,7 @@ try {
         }
         refreshTable();
         idcours.setText("");
-    }//GEN-LAST:event_chercher1ActionPerformed
+    }//GEN-LAST:event_supprimerActionPerformed
 
     private void chercher2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chercher2ActionPerformed
         DefaultTableModel model = (DefaultTableModel) tablecours.getModel();
@@ -429,7 +360,6 @@ try {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton chercher;
-    private javax.swing.JButton chercher1;
     private javax.swing.JButton chercher2;
     private javax.swing.JButton chercher3;
     private javax.swing.JComboBox<String> choixClasse;
@@ -448,6 +378,7 @@ try {
     private javax.swing.JTextField matricule;
     private javax.swing.JButton retour;
     private javax.swing.JLabel suppAlerte;
+    private javax.swing.JButton supprimer;
     private javax.swing.JTable tablecours;
     // End of variables declaration//GEN-END:variables
 }

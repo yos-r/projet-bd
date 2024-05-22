@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,14 +27,14 @@ public class Accueil extends javax.swing.JPanel {
         DefaultTableModel modelcours = (DefaultTableModel) tablecours.getModel();
 
         List<String> classes=getClasses();
-        List<String> heures=getHeure();
-        List<String> jours=getJour();
+//        List<String> heures=getHeure();
+        String[] jours={"Lundi","Mardi","Mercredi","Jeudi","Vendredi"};
+        String[] lesheures={"8H","9H30Mn","11H","13H","14H30Mn","16H","17H30Mn"};
+
         String[] lesclasses = classes.toArray(new String[0]);
-         String[] lesheures = heures.toArray(new String[0]);
-        String[] lesjours = jours.toArray(new String[0]);
         DefaultComboBoxModel<String> modelclasse = new DefaultComboBoxModel<>(lesclasses);
         DefaultComboBoxModel<String> modelheure = new DefaultComboBoxModel<>(lesheures);
-        DefaultComboBoxModel<String> modeljours = new DefaultComboBoxModel<>(lesjours);
+        DefaultComboBoxModel<String> modeljours = new DefaultComboBoxModel<>(jours);
         choixClasse.setModel(modelclasse);
         choixHeure.setModel(modelheure);
         choixJour.setModel(modeljours);
@@ -64,40 +65,8 @@ public class Accueil extends javax.swing.JPanel {
         }
         return list;
     }
-     public static List<String> getHeure(){
-        List<String> list = new ArrayList<String>(); 
-        try{
-            String req = "SELECT DISTINCT(heure) FROM cours;";
-            Connection con=Main.con;
-            PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                list.add(resultSet.getString(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-      public static List<String> getJour(){
-        List<String> list = new ArrayList<String>(); 
-        try{
-            String req = "SELECT DISTINCT(Jour) FROM cours;";
-            Connection con=Main.con;
-            PreparedStatement preparedStatement = (PreparedStatement) con.prepareStatement(req);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                list.add(resultSet.getString(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-    
-
+     
+   
     public static List<Enseignant> getEnseignants() 
     {
         List<Enseignant> list = new ArrayList<Enseignant>(); 
@@ -161,6 +130,7 @@ public class Accueil extends javax.swing.JPanel {
         int st=0;
         try
         {
+            
             String req = "INSERT INTO enseignant VALUES (?,?,?);";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
@@ -172,8 +142,90 @@ public class Accueil extends javax.swing.JPanel {
         catch(SQLException e)
         {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, 
+                                          "Erreur lors de l'ajout de l'enseignant "+matricule, 
+                                          "Erreur ajout enseignant", 
+                                          JOptionPane.ERROR_MESSAGE);
         }
         return st;
+    }
+    public static int existeEnseignant(String matricule){
+        int st=0;
+        try
+        {
+            String req = "SELECT * from enseignant WHERE matricule=?;";
+            Connection con=Main.con;
+            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+            preparedStatement.setString(1, matricule);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next() ){
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return st;
+    }
+    public static int verifCreneauClasse(String classe, String heure,String jour){
+        int res=0;
+        try
+        {
+            String req = "SELECT * from cours WHERE classe=? and heure=? and jour=?";
+            Connection con=Main.con;
+            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+            preparedStatement.setString(1, classe);
+            preparedStatement.setString(2, heure);
+            preparedStatement.setString(3, jour);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next() ){
+                JOptionPane.showMessageDialog(null, 
+                                          "Erreur lors de l'ajout du cours. La classe "+classe+" a un cours "+resultSet.getString(3)+" le "+resultSet.getString(5)+" a "+resultSet.getString(6) , 
+                                          "Erreur ajout du cours", 
+                                          JOptionPane.ERROR_MESSAGE);
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return res;
+    }
+    public static int verifCreneauEnseignant(String enseignant, String heure,String jour){
+        int res=0;
+        try
+        {
+            String req = "SELECT * from cours WHERE matricule_ens=? and heure=? and jour=?";
+            Connection con=Main.con;
+            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+            preparedStatement.setString(1, enseignant);
+            preparedStatement.setString(2, heure);
+            preparedStatement.setString(3, jour);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next() ){
+                JOptionPane.showMessageDialog(null, 
+                                          "Erreur lors de l'ajout du cours. L'enseignant "+enseignant+" a un cours "+resultSet.getString(3)+" le "+resultSet.getString(5)+" a "+resultSet.getString(6) , 
+                                          "Erreur ajout du cours", 
+                                          JOptionPane.ERROR_MESSAGE);
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return res;
     }
     public static int addCours(String classe,String matiere, String jour, String heure, String matricule)
     {
@@ -183,6 +235,18 @@ public class Accueil extends javax.swing.JPanel {
         List<String> listejours=Arrays.asList(jours);
         int indexjour=listejours.indexOf(jour)+1;
         
+        if (existeEnseignant(matricule)==0){
+        JOptionPane.showMessageDialog(null, 
+                                          "L'enseignant "+matricule+" n'existe pas dans la base", 
+                                          "Erreur ajout de cours", 
+                                          JOptionPane.ERROR_MESSAGE);
+        }
+        else if (verifCreneauClasse(classe, heure, jour)==1){
+            
+        }
+        else if(verifCreneauEnseignant(matricule,heure,jour)==1){
+        }
+        else{
         try
         {
             String req = "INSERT INTO cours(classe,matiere,num_jour,jour,heure,matricule_ens) VALUES (?,?,?,?,?,?);";
@@ -200,6 +264,7 @@ public class Accueil extends javax.swing.JPanel {
         catch(SQLException e)
         {
             e.printStackTrace();
+        }
         }
         return st;
     }
@@ -249,7 +314,6 @@ public class Accueil extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         matricule = new javax.swing.JTextField();
@@ -277,27 +341,32 @@ public class Accueil extends javax.swing.JPanel {
         choixJour = new javax.swing.JComboBox<>();
         choixHeure = new javax.swing.JComboBox<>();
         enregistrercours = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
-        jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jLabel1.setText("Formulaire d'enregistrement des enseignants");
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel2.setText("Matricule");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel3.setText("Nom");
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, -1, -1));
 
         matricule.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 matriculeActionPerformed(evt);
             }
         });
+        add(matricule, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 110, -1));
 
         nom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nomActionPerformed(evt);
             }
         });
+        add(nom, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 120, 190, -1));
 
         chercher.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         chercher.setText("Chercher");
@@ -307,15 +376,18 @@ public class Accueil extends javax.swing.JPanel {
                 chercherActionPerformed(evt);
             }
         });
+        add(chercher, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel5.setText("Contact");
+        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, 20));
 
         contact.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 contactActionPerformed(evt);
             }
         });
+        add(contact, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 160, 190, -1));
 
         requetes.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         requetes.setText("Requêtes");
@@ -325,6 +397,7 @@ public class Accueil extends javax.swing.JPanel {
                 requetesActionPerformed(evt);
             }
         });
+        add(requetes, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 590, -1, -1));
 
         tablecours.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -355,6 +428,8 @@ public class Accueil extends javax.swing.JPanel {
             tablecours.getColumnModel().getColumn(2).setResizable(false);
         }
 
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 340, 460, 259));
+
         tableenseignants.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -384,8 +459,11 @@ public class Accueil extends javax.swing.JPanel {
             tableenseignants.getColumnModel().getColumn(2).setResizable(false);
         }
 
-        jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 70, 460, 208));
+
+        jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel4.setText("Formulaire de gestion des cours");
+        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 290, 324, -1));
 
         enregistrer.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         enregistrer.setText("Enregistrer");
@@ -395,6 +473,7 @@ public class Accueil extends javax.swing.JPanel {
                 enregistrerActionPerformed(evt);
             }
         });
+        add(enregistrer, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 200, 90, -1));
 
         modifier.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         modifier.setText("Modifier");
@@ -404,6 +483,7 @@ public class Accueil extends javax.swing.JPanel {
                 modifierActionPerformed(evt);
             }
         });
+        add(modifier, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 200, -1, -1));
 
         supprimer.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         supprimer.setText("Supprimer");
@@ -413,33 +493,41 @@ public class Accueil extends javax.swing.JPanel {
                 supprimerActionPerformed(evt);
             }
         });
+        add(supprimer, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, 90, 20));
 
         jLabel6.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel6.setText("Classe");
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel7.setText("Matière");
+        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 390, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel8.setText("Jour");
+        add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 430, -1, -1));
 
         jLabel9.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel9.setText("Heure");
+        add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, -1, -1));
 
         matiere.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 matiereActionPerformed(evt);
             }
         });
+        add(matiere, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 390, 148, -1));
 
         matricule2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 matricule2ActionPerformed(evt);
             }
         });
+        add(matricule2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 510, 148, -1));
 
         jLabel10.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel10.setText("Matricule Ens.");
+        add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 510, -1, -1));
 
         choixClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         choixClasse.addActionListener(new java.awt.event.ActionListener() {
@@ -447,6 +535,7 @@ public class Accueil extends javax.swing.JPanel {
                 choixClasseActionPerformed(evt);
             }
         });
+        add(choixClasse, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 350, 148, -1));
 
         choixJour.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         choixJour.addActionListener(new java.awt.event.ActionListener() {
@@ -454,6 +543,7 @@ public class Accueil extends javax.swing.JPanel {
                 choixJourActionPerformed(evt);
             }
         });
+        add(choixJour, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 430, 148, -1));
 
         choixHeure.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         choixHeure.addActionListener(new java.awt.event.ActionListener() {
@@ -461,6 +551,7 @@ public class Accueil extends javax.swing.JPanel {
                 choixHeureActionPerformed(evt);
             }
         });
+        add(choixHeure, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 470, 148, -1));
 
         enregistrercours.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         enregistrercours.setText("Enregistrer");
@@ -470,136 +561,28 @@ public class Accueil extends javax.swing.JPanel {
                 enregistrercoursActionPerformed(evt);
             }
         });
+        add(enregistrercours, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 550, -1, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(45, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel5)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel2)
-                                                    .addComponent(jLabel3))
-                                                .addGap(18, 18, 18)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(matricule, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                        .addComponent(chercher))
-                                                    .addComponent(nom)
-                                                    .addComponent(contact, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(20, 20, 20)
-                                                .addComponent(enregistrer)
-                                                .addGap(27, 27, 27)
-                                                .addComponent(modifier)))
-                                        .addGap(35, 35, 35))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(supprimer)
-                                        .addGap(104, 104, 104)))
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel6)
-                                            .addComponent(jLabel7)
-                                            .addComponent(jLabel8)
-                                            .addComponent(jLabel9)
-                                            .addComponent(jLabel10))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(matricule2, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-                                            .addComponent(matiere, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-                                            .addComponent(choixClasse, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(choixJour, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(choixHeure, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGap(31, 31, 31))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(enregistrercours)
-                                            .addComponent(requetes))
-                                        .addGap(112, 112, 112)))
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(15, 15, 15))
+        jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel1.setText("Formulaire d'enregistrement des enseignants");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(22, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(33, 33, 33)
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(matricule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(chercher))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(nom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
-                        .addGap(15, 15, 15)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(contact, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(enregistrer)
-                            .addComponent(modifier))
-                        .addGap(51, 51, 51)
-                        .addComponent(supprimer))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(choixClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(matiere, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(7, 7, 7)
-                                .addComponent(choixJour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(choixHeure, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(matricule2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel10))
-                        .addGap(28, 28, 28)
-                        .addComponent(enregistrercours)
-                        .addGap(9, 9, 9)
-                        .addComponent(requetes)))
-                .addGap(31, 31, 31))
+                .addGap(0, 12, Short.MAX_VALUE))
         );
+
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 33, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void matriculeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matriculeActionPerformed
@@ -670,10 +653,17 @@ public class Accueil extends javax.swing.JPanel {
         deleteEnseignantByMatricule(matriculetexte);    
         System.out.println("Suppression de l'enseignant "+ matriculetexte+ " réussie ");
         DefaultTableModel model = (DefaultTableModel) tableenseignants.getModel();
+        DefaultTableModel model2 = (DefaultTableModel) tablecours.getModel();
+
         model.setRowCount(0);
+        model2.setRowCount(0);
         for(Enseignant enseignant:getEnseignants()){
             Object[] row= {enseignant.getMatricule(),enseignant.getNom(),enseignant.getContact()};
             model.addRow(row);
+        }
+        for(Cours cours:this.getCours()){
+            Object[] row= {cours.getClasse(),cours.getMatiere(),cours.getJour(),cours.getHeure(),cours.getEnseignant()};
+            model2.addRow(row);
         }
         matricule.setText("");
         
@@ -707,6 +697,7 @@ public class Accueil extends javax.swing.JPanel {
         String choixjour=this.choixJour.getSelectedItem().toString();
         String choixens=this.matricule2.getText();
         System.out.println("Classe: "+choixclasse+" heure "+choixheure + " jour "+choixjour);
+        
         addCours(choixclasse, choixmatiere, choixjour, choixheure, choixens);
         model.setRowCount(0);
         for(Cours cours:this.getCours()){
@@ -735,6 +726,7 @@ public class Accueil extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField matiere;

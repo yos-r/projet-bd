@@ -32,7 +32,7 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         con=getConnection();
         setTitle("Gestion des emplois du temps");
-        this.setSize(835,604);
+        this.setSize(820,700);
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         getContentPane().add(mainPanel);
