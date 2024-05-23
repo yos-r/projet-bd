@@ -1,7 +1,6 @@
 package emplois;
 
 import static emplois.Accueil.getClasses;
-import static emplois.Accueil.getEnseignantByMatricule;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -233,6 +232,8 @@ try {
 
         retour.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         retour.setText("Retour");
+        retour.setMaximumSize(new java.awt.Dimension(77, 22));
+        retour.setMinimumSize(new java.awt.Dimension(77, 22));
         retour.setName(""); // NOI18N
         retour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -248,6 +249,8 @@ try {
 
         supprimer.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         supprimer.setText("Supprimer");
+        supprimer.setMaximumSize(new java.awt.Dimension(77, 22));
+        supprimer.setMinimumSize(new java.awt.Dimension(77, 22));
         supprimer.setName(""); // NOI18N
         supprimer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

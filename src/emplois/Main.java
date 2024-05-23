@@ -19,8 +19,8 @@ public class Main extends javax.swing.JFrame {
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver"); //Driver class
-            String url = "jdbc:mysql://localhost:3306/edt"; //jdbc: API, mysql is the database, localhost: server, 3306 port
-            con = DriverManager.getConnection(url,"root","system");
+            String url = "jdbc:mysql://localhost:3306/edt_isi"; //jdbc: API, mysql is the database, localhost: server, 3306 port
+            con = DriverManager.getConnection(url,"root","");
             System.out.println("Connexion réussie");
         }catch(ClassNotFoundException | SQLException e)
         {
@@ -94,10 +94,8 @@ public class Main extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Main().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Main().setVisible(true);
         });
     }
 

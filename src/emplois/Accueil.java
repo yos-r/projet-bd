@@ -104,15 +104,15 @@ public class Accueil extends javax.swing.JPanel {
     }
     
     //recherche enseignants par matricule
-    public static List<Enseignant> getEnseignantByMatricule(String matricule)
+    public static List<Enseignant> getEnseignantByName(String nom)
     {
         List<Enseignant> liste = new ArrayList<Enseignant>();
         try
         {
-            String req = "SELECT * FROM enseignant where matricule = ?;";
+            String req = "SELECT * FROM enseignant where nom = ?;";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
-            preparedStatement.setString(1, matricule);
+            preparedStatement.setString(1, nom);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
@@ -130,7 +130,14 @@ public class Accueil extends javax.swing.JPanel {
         int st=0;
         try
         {
-            
+            if ("".equals(matricule))
+            {
+                JOptionPane.showMessageDialog(null, 
+                                          "Erreur lors de l'ajout de l'enseignant matricule vide", 
+                                          "Erreur ajout enseignant", 
+                                          JOptionPane.ERROR_MESSAGE);
+            }
+            else {
             String req = "INSERT INTO enseignant VALUES (?,?,?);";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
@@ -138,6 +145,7 @@ public class Accueil extends javax.swing.JPanel {
             preparedStatement.setString(2, nom);
             preparedStatement.setString(3, contact);
             st = preparedStatement.executeUpdate();
+            }
         }
         catch(SQLException e)
         {
@@ -303,6 +311,14 @@ public class Accueil extends javax.swing.JPanel {
         else{
         try
         {
+            if ("".equals(matiere))
+            {
+                JOptionPane.showMessageDialog(null, 
+                                          "Erreur lors de l'ajout de cours, le nom de la matiere est vide", 
+                                          "Erreur ajout enseignant", 
+                                          JOptionPane.ERROR_MESSAGE);
+            }
+            else{
             String req = "INSERT INTO cours(classe,matiere,num_jour,jour,heure,matricule_ens) VALUES (?,?,?,?,?,?);";
             Connection con=Main.con;
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
@@ -315,6 +331,7 @@ public class Accueil extends javax.swing.JPanel {
             
             st = preparedStatement.executeUpdate();
         }
+        }
         catch(SQLException e)
         {
             e.printStackTrace();
@@ -326,15 +343,39 @@ public class Accueil extends javax.swing.JPanel {
     public static int updateEnseignant(String matricule,String nom,String contact)
     {
         int st=0;
+        String req;
         try
         {
-            String req = "UPDATE enseignant SET nom = ? , contact =?  WHERE matricule=?;";
             Connection con=Main.con;
+            if(!"".equals(matricule) && !"".equals(nom) && !"".equals(contact))
+            {
+             req="UPDATE enseignant SET nom = ? , contact =?  WHERE matricule=?;";
             PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
             preparedStatement.setString(1, nom);
             preparedStatement.setString(2, contact);
             preparedStatement.setString(3, matricule);
             st = preparedStatement.executeUpdate();
+            }else if("".equals(nom) &&"".equals(contact))
+            {
+                return st;
+            }
+            else if( "".equals(nom))
+            {
+                req = "UPDATE enseignant SET contact =?  WHERE matricule=?;";
+            PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+            preparedStatement.setString(1, contact);
+            preparedStatement.setString(2, matricule);
+            st = preparedStatement.executeUpdate();
+            }
+            else if( "".equals(contact))
+            {
+                req = "UPDATE enseignant SET nom =?  WHERE matricule=?;";
+                PreparedStatement preparedStatement = (PreparedStatement)con.prepareCall(req);
+                preparedStatement.setString(1, nom);
+                preparedStatement.setString(2, matricule);
+                st = preparedStatement.executeUpdate();
+            }
+
         }
         catch(SQLException e)
         {
@@ -446,6 +487,8 @@ public class Accueil extends javax.swing.JPanel {
 
         requetes.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         requetes.setText("Requêtes");
+        requetes.setMaximumSize(new java.awt.Dimension(77, 22));
+        requetes.setMinimumSize(new java.awt.Dimension(77, 22));
         requetes.setName(""); // NOI18N
         requetes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -522,6 +565,8 @@ public class Accueil extends javax.swing.JPanel {
 
         enregistrer.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         enregistrer.setText("Enregistrer");
+        enregistrer.setMaximumSize(new java.awt.Dimension(77, 22));
+        enregistrer.setMinimumSize(new java.awt.Dimension(77, 22));
         enregistrer.setName(""); // NOI18N
         enregistrer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -542,6 +587,8 @@ public class Accueil extends javax.swing.JPanel {
 
         supprimer.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         supprimer.setText("Supprimer");
+        supprimer.setMaximumSize(new java.awt.Dimension(77, 22));
+        supprimer.setMinimumSize(new java.awt.Dimension(77, 22));
         supprimer.setName(""); // NOI18N
         supprimer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -610,6 +657,7 @@ public class Accueil extends javax.swing.JPanel {
 
         enregistrercours.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         enregistrercours.setText("Enregistrer");
+        enregistrercours.setMaximumSize(new java.awt.Dimension(77, 22));
         enregistrercours.setName(""); // NOI18N
         enregistrercours.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -640,6 +688,8 @@ public class Accueil extends javax.swing.JPanel {
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 33, -1, -1));
 
         Rafraichir.setText("Rafraichir");
+        Rafraichir.setMaximumSize(new java.awt.Dimension(77, 23));
+        Rafraichir.setMinimumSize(new java.awt.Dimension(77, 23));
         Rafraichir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RafraichirActionPerformed(evt);
@@ -658,13 +708,13 @@ public class Accueil extends javax.swing.JPanel {
 
     private void chercherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chercherActionPerformed
         DefaultTableModel model = (DefaultTableModel) tableenseignants.getModel();
-        String matriculetexte=matricule.getText();
+        String nomtexte=nom.getText();
         model.setRowCount(0);
-        for(Enseignant enseignant:getEnseignantByMatricule(matriculetexte)){
+        for(Enseignant enseignant:getEnseignantByName(nomtexte)){
             Object[] row= {enseignant.getMatricule(),enseignant.getNom(),enseignant.getContact()};
             model.addRow(row);
         }
-        if (matriculetexte.equals("")){
+        if (nomtexte.equals("")){
             for(Enseignant enseignant:getEnseignants()){
             Object[] row= {enseignant.getMatricule(),enseignant.getNom(),enseignant.getContact()};
             model.addRow(row);
@@ -684,7 +734,6 @@ public class Accueil extends javax.swing.JPanel {
         addEnseignant(matricule.getText(),nom.getText(),contact.getText());    
         DefaultTableModel model = (DefaultTableModel) tableenseignants.getModel();
         System.out.println("Ajout de l'enseignant "+ matricule.getText()+ " réussie ");
-
         model.setRowCount(0);
         for(Enseignant enseignant:getEnseignants()){
             Object[] row= {enseignant.getMatricule(),enseignant.getNom(),enseignant.getContact()};
@@ -713,11 +762,18 @@ public class Accueil extends javax.swing.JPanel {
 
     private void supprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerActionPerformed
         String matriculetexte=matricule.getText();
-        deleteEnseignantByMatricule(matriculetexte);    
+        int st=deleteEnseignantByMatricule(matriculetexte);    
+        if (st==0){
+            System.out.println("Impossible de supprimer  l'enseignant "+matriculetexte);
+            JOptionPane.showMessageDialog(null, 
+                                          "Impossible de supprimer  l'enseignant de matricule "+matriculetexte, 
+                                          "Erreur suppression d'enseignant", 
+                                          JOptionPane.ERROR_MESSAGE);
+        }else
+        {
         System.out.println("Suppression de l'enseignant "+ matriculetexte+ " réussie ");
         DefaultTableModel model = (DefaultTableModel) tableenseignants.getModel();
         DefaultTableModel model2 = (DefaultTableModel) tablecours.getModel();
-
         model.setRowCount(0);
         model2.setRowCount(0);
         for(Enseignant enseignant:getEnseignants()){
@@ -729,7 +785,8 @@ public class Accueil extends javax.swing.JPanel {
             model2.addRow(row);
         }
         matricule.setText("");
-        
+        }
+
     }//GEN-LAST:event_supprimerActionPerformed
 
     private void matiereActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matiereActionPerformed
